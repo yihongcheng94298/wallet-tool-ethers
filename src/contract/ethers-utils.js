@@ -12,6 +12,42 @@ const pStore = providerStore()
 const contracts = import.meta.glob('./contracts/*.json')
 
 /**
+  * 随机生成UUID
+  *
+  * @param len    长度
+  * @param radix  进制，例：10
+  * @returns {string}
+  */
+export async function uuid(len, radix) {
+  let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
+  let uuid = []
+  let i
+  radix = radix || chars.length
+
+  if (len) {
+    // Compact form
+    for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix]
+  } else {
+    // rfc4122, version 4 form
+    var r
+
+    // rfc4122 requires these characters
+    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-'
+    uuid[14] = '4'
+
+    // Fill in random data.  At i==19 set the high bits of clock sequence as
+    // per rfc4122, sec. 4.1.5
+    for (i = 0; i < 36; i++) {
+      if (!uuid[i]) {
+        r = 0 | Math.random() * 16
+        uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r]
+      }
+    }
+  }
+
+  return uuid.join('')
+}
+/**
   * 参数是否被定义
   */
 export async function isDefine(para) {
@@ -61,8 +97,8 @@ export async function asconnectWallet() {
     console.log('当前账户:', account)
 
     // 4. 等效签名（signMessage 对应 personal_sign）
-    let signInfoName = 'wallet-tool-ethers'
-    let baseURL = 'https://yimaibao.xyz'
+    let signInfoName = 'SOF'
+    let baseURL = 'https://sparkfire.space'
     const signTime = Date.now();
     const message = signInfoName + ' wants you to sign in with your account:\n' + account + '\n\nSign in with account to the app.\n\nURI: ' + baseURL + '\nLogin time: ' + signTime
     const signature = await signer.signMessage(message);
