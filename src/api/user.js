@@ -2,7 +2,7 @@ import Api from '@/api/index'
 
 export function login(loginInfo) {
   return Api.notCheck(
-      '/api/dapp/wallet/login',
+      '/api/login',
       'post',
       loginInfo
   )
