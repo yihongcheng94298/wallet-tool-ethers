@@ -97,6 +97,43 @@ export async function getDevice() {
 }
 
 /**
+ * 获取项目环境需要的链名称
+ *
+ * @returns {string|string}
+ */
+export function getChain() {
+	return import.meta.env.VITE_APP_CHAIN || 'bsc'
+}
+
+/**
+ * 获取合约ABI中指定函数的ABI
+ * @param abi 合约ABI
+ * @param funcName 函数名称
+ * @returns {*}
+ */
+function getFuncAbi (abi, funcName) {
+	if (isNull(abi)) {
+		return null
+	}
+
+	for (let i = 0; i < abi.length; i++) {
+		if (abi[i].name === funcName) {
+			return abi[i]
+		}
+	}
+}
+
+export async function contract(contractName, config, chainName) {
+  const providerObj = await getProvider(config)
+  const provider = providerObj.provider
+  await switchNet(provider)
+  const web3 = new Web3(provider)
+  const contract = await loadContract(contractName)
+  const myContract = new web3.eth.Contract(contract.abi, contract[chainName ? chainName : getChain()])
+  return {contract: myContract, abi: contract.abi, address: contract[chainName ? chainName : getChain()], decimals: contract.decimals}
+}
+
+/**
  * 连接钱包
  */
 export async function asConnectWallet() {
@@ -115,8 +152,10 @@ export async function asConnectWallet() {
     console.log('当前账户:', account)
 
     // 4. 等效签名（signMessage 对应 personal_sign）
-    const signInfoName = 'SOF'
-    const baseURL = 'https://sparkfire.space'
+    const signInfoName = 'YIMAIBAO'
+    const baseURL = 'https://yimaibao.xyz'
+    // const signInfoName = 'SOF'
+    // const baseURL = 'https://sparkfire.space'
     const signTime = Date.now();
     const message = signInfoName + ' wants you to sign in with your account:\n' + account + '\n\nSign in with account to the app.\n\nURI: ' + baseURL + '\nLogin time: ' + signTime
     const signature = await signer.signMessage(message);
@@ -145,19 +184,22 @@ export async function asConnectWallet() {
         alert(result.data.msg)
       }
     })
-
+    // const abi = getFuncAbi((await contract(contractName, config, chainName)).abi, funcName)
+    const contractData = await loadContract('ais')
+    console.log('contract:', contractData);
+    
     // 通用配置
-    const ERC20_ABI = [
-      "function balanceOf(address owner) view returns (uint256)",
-      "function totalSupply() view returns (uint256)"
-    ];
-    const CONTRACT_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F'; // DAI 合约示例
+    const ERC20_ABI = contractData.abi;
+    const CONTRACT_ADDRESS = contractData.bsc; // DAI 合约示例
+    console.log('ERC20_ABI:', ERC20_ABI);
+    console.log('CONTRACT_ADDRESS:', CONTRACT_ADDRESS);
 
     // 1. 创建合约实例（绑定 Provider = 只读）
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ERC20_ABI, provider);
     console.log('contract:', contract);
     // 2. 调用只读方法（直接调用，无需 .call()）
     const balance = await contract.balanceOf(account);
+    console.log('余额：', ethers.formatEther(balance)); // 格式化 wei → ETH
     // const totalSupply = await contract.totalSupply();
     // // 注：ethers 自动处理 BigNumber 转换，可通过 .toString() 转字符串
     // console.log('余额：', ethers.formatEther(balance)); // 格式化 wei → ETH
