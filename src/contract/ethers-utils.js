@@ -198,8 +198,12 @@ export async function asConnectWallet() {
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ERC20_ABI, provider);
     console.log('contract:', contract);
     // 2. 调用只读方法（直接调用，无需 .call()）
-    const balance = await contract.balanceOf(account);
-    console.log('余额：', ethers.formatEther(balance)); // 格式化 wei → ETH
+    try {
+      const balance = await contract.balanceOf(account);
+      console.log('余额：', ethers.formatEther(balance)); // 格式化 wei → ETH
+    } catch (error) {
+      console.log('获取余额失败:', error)
+    }
     // const totalSupply = await contract.totalSupply();
     // // 注：ethers 自动处理 BigNumber 转换，可通过 .toString() 转字符串
     // console.log('余额：', ethers.formatEther(balance)); // 格式化 wei → ETH
