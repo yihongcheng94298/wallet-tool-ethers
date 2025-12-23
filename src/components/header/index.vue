@@ -24,7 +24,7 @@
 </template>
 <script setup>
 import { call, connect, send } from "@/contract/web3-util";
-import { asconnectWallet } from "@/contract/ethers-utils";
+import { asConnectWallet } from "@/contract/ethers-utils";
 import Util from '@/utils/common-util'
 import { walletStore } from "@/store/wallet";
 import { memberStore } from "@/store/member";
@@ -72,7 +72,7 @@ const gobmb = () => {
 // 链接钱包
 function connectWallet() {
     // connect()
-    asconnectWallet()
+    asConnectWallet()
 }
 </script>
 <style scoped src="./css/index.less" lang="less"></style>
