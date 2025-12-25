@@ -17,13 +17,13 @@ const contracts = import.meta.glob('./contracts/*.json')
  * @returns {Promise<*>}
  */
 async function loadContract(contractName) {
-	const contractPath = `./contracts/${contractName}.json`;
+  const contractPath = `./contracts/${contractName}.json`;
 
-	if (contracts[contractPath]) {
-		return await contracts[contractPath]();
-	} else {
-		console.error('未找到合约:', contractName);
-	}
+  if (contracts[contractPath]) {
+    return await contracts[contractPath]();
+  } else {
+    console.error('未找到合约:', contractName);
+  }
 }
 
 /**
@@ -102,7 +102,7 @@ export async function getDevice() {
  * @returns {string|string}
  */
 export function getChain() {
-	return import.meta.env.VITE_APP_CHAIN || 'bsc'
+  return import.meta.env.VITE_APP_CHAIN || 'bsc'
 }
 
 /**
@@ -111,26 +111,16 @@ export function getChain() {
  * @param funcName 函数名称
  * @returns {*}
  */
-function getFuncAbi (abi, funcName) {
-	if (isNull(abi)) {
-		return null
-	}
+function getFuncAbi(abi, funcName) {
+  if (isNull(abi)) {
+    return null
+  }
 
-	for (let i = 0; i < abi.length; i++) {
-		if (abi[i].name === funcName) {
-			return abi[i]
-		}
-	}
-}
-
-export async function contract(contractName, config, chainName) {
-  const providerObj = await getProvider(config)
-  const provider = providerObj.provider
-  await switchNet(provider)
-  const web3 = new Web3(provider)
-  const contract = await loadContract(contractName)
-  const myContract = new web3.eth.Contract(contract.abi, contract[chainName ? chainName : getChain()])
-  return {contract: myContract, abi: contract.abi, address: contract[chainName ? chainName : getChain()], decimals: contract.decimals}
+  for (let i = 0; i < abi.length; i++) {
+    if (abi[i].name === funcName) {
+      return abi[i]
+    }
+  }
 }
 
 /**
@@ -160,7 +150,7 @@ export async function asConnectWallet() {
     const message = signInfoName + ' wants you to sign in with your account:\n' + account + '\n\nSign in with account to the app.\n\nURI: ' + baseURL + '\nLogin time: ' + signTime
     const signature = await signer.signMessage(message);
     console.log("签名结果：", signature);
-    
+
     // loading 开始
     start()
 
@@ -179,15 +169,15 @@ export async function asConnectWallet() {
         const salt = result.data.data.salt
         console.log('token:', token)
         console.log('salt:', salt)
-        
+
       } else {
         alert(result.data.msg)
       }
     })
     // const abi = getFuncAbi((await contract(contractName, config, chainName)).abi, funcName)
     const contractData = await loadContract('ais')
-    console.log('contract:', contractData);
-    
+    console.log('contract9:', contractData);
+
     // 通用配置
     const ERC20_ABI = contractData.abi;
     const CONTRACT_ADDRESS = contractData.bsc; // DAI 合约示例
@@ -196,7 +186,7 @@ export async function asConnectWallet() {
 
     // 1. 创建合约实例（绑定 Provider = 只读）
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ERC20_ABI, provider);
-    console.log('contract:', contract);
+    console.log('contract---------------------------', JSON.parse(JSON.stringify(contract)));
     // 2. 调用只读方法（直接调用，无需 .call()）
     try {
       const balance = await contract.balanceOf(account);

@@ -71,8 +71,8 @@ const gobmb = () => {
 
 // 链接钱包
 function connectWallet() {
-    // connect()
-    asConnectWallet()
+    connect()
+    // asConnectWallet()
 }
 </script>
 <style scoped src="./css/index.less" lang="less"></style>
