@@ -184,14 +184,6 @@ function setCurAccount(account) {
 }
 
 /**
- * 获取当前账户
- * @returns {string} 账户地址
- */
-function getCurAccount() {
-	return wStore.getCurAccount;
-}
-
-/**
  * 切换网络
  * @param {ethers.BrowserProvider} provider 钱包Provider
  * @returns {Promise<boolean>} 是否切换成功
@@ -549,11 +541,12 @@ function getFuncAbi(abi, funcName) {
  * @returns {Promise<any>} 调用结果
  */
 export async function call(contractName, funcName, params = [], from, config, chainName) {
+	// console.log(await contract(contractName, config, chainName), "22222222222222222222");
 	try {
 		const { contract, abi } = await contract(contractName, config, chainName);
 		const funcAbi = getFuncAbi(abi, funcName);
 		const processedParams = inputsParamsHandle(params, funcAbi.inputs);
-
+		console.log(`处理参数成功:`, funcAbi, processedParams);
 		// 执行调用
 		const result = await contract[funcName](...processedParams);
 		return result;
@@ -602,7 +595,6 @@ export async function send(contractName, funcName, params = [], value, config) {
  */
 export function fromWei(amount, decimals) {
 	if (decimals > 18 || isNull(amount)) return 0;
-
 	const bnAmount = ethers.BigNumber.from(amount);
 	return Number(ethers.formatUnits(bnAmount, decimals));
 }
